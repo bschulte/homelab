@@ -38,7 +38,7 @@ serviceDns:
   mixedService: false
 
   # -- `spec.type` for the DNS Service
-  type: NodePort
+  type: LoadBalancer
 
   # -- The port of the DNS service
   port: 53
@@ -50,15 +50,14 @@ serviceDns:
   externalTrafficPolicy: Local
 
   # -- A fixed `spec.loadBalancerIP` for the DNS Service
-  loadBalancerIP: ""
+  loadBalancerIP: "192.168.1.201"
   # -- A fixed `spec.loadBalancerIP` for the IPv6 DNS Service
   loadBalancerIPv6: ""
 
   # -- Annotations for the DNS service
   annotations:
-    {}
+    metallb.universe.tf/allow-shared-ip: pihole-svc
     # metallb.universe.tf/address-pool: network-services
-    # metallb.universe.tf/allow-shared-ip: pihole-svc
 
 # -- Configuration for the DHCP service on port 67
 serviceDhcp:
@@ -113,21 +112,20 @@ serviceWeb:
     nodePort: ""
 
   # -- `spec.type` for the web interface Service
-  type: ClusterIP
+  type: LoadBalancer
 
   # -- `spec.externalTrafficPolicy` for the web interface Service
   externalTrafficPolicy: Local
 
   # -- A fixed `spec.loadBalancerIP` for the web interface Service
-  loadBalancerIP: ""
+  loadBalancerIP: "192.168.1.201"
   # -- A fixed `spec.loadBalancerIP` for the IPv6 web interface Service
   loadBalancerIPv6: ""
 
-  # -- Annotations for the DHCP service
+  # -- Annotations for the ServiceWeb service
   annotations:
-    {}
+    metallb.universe.tf/allow-shared-ip: pihole-svc
     # metallb.universe.tf/address-pool: network-services
-    # metallb.universe.tf/allow-shared-ip: pihole-svc
 
 virtualHost: pi.hole
 
@@ -185,29 +183,29 @@ probes:
 # -- resources, such as Minikube. If you do want to specify resources, uncomment the following
 # -- lines, adjust them as necessary, and remove the curly braces after 'resources:'.
 resources:
-  {}
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+  # {}
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 # -- `spec.PersitentVolumeClaim` configuration
 persistentVolumeClaim:
   # -- set to true to use pvc
-  enabled: false
+  enabled: true
 
   # -- specify an existing `PersistentVolumeClaim` to use
-  # existingClaim: ""
+  existingClaim: "pihole-pvc"
 
   # -- Annotations for the `PersitentVolumeClaim`
-  annotations: {}
+  # annotations: {}
 
-  accessModes:
-    - ReadWriteOnce
+  # accessModes:
+  #   - ReadWriteOnce
 
-  size: "500Mi"
+  # size: "500Mi"
 
   ## If defined, storageClassName: <storageClass>
   ## If set to "-", storageClassName: "", which disables dynamic provisioning
